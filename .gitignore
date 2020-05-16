@@ -127,3 +127,12 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Large files
+data/trip_data/green_tripdata_2016-01_2.csv
+models/*.joblib
+results/animation_frames/*
+
+# Vim
+*.swp
+*.swo

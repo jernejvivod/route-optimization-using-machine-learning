@@ -1,0 +1,12 @@
+gmplot==1.2.0
+pandas==0.22.0
+geoplotlib==0.3.2
+scipy==0.19.1
+geopy==1.22.0
+numpy==1.13.3
+joblib==0.13.2
+networkx==2.4
+dill==0.3.1.1
+matplotlib==3.1.2
+more_itertools==7.2.0
+scikit_learn==0.23.0

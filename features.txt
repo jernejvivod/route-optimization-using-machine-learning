@@ -1,0 +1,26 @@
+# This file lists the features to use to build the model
+# The features can be ignored by prefixing them with #.
+
+vendor_id
+pickup-datetime
+store-and-fwd-flag
+rate-code-id
+pickup-longitude
+pickup-latitude
+dropoff-longitude
+dropoff-latitude
+longitude-difference
+latitude-difference
+geodesic-dist
+passenger-count
+trip-distance
+fare-amount
+extra
+mta-tax
+tip-amount
+tolls-amount
+ehail-fee
+improvement-surcharge
+total-amount
+payment-type
+trip-type
