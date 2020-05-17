@@ -1,7 +1,6 @@
 import numpy as np
 import random
 import networkx as nx
-import functools
 import more_itertools
 import matplotlib.pyplot as plt
 import geopy.distance as geodesic_dist
