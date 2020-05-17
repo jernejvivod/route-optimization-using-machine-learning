@@ -2,8 +2,11 @@ import numpy as np
 import pandas as pd
 from scipy.spatial.distance import cdist, pdist, squareform
 import random
-import gmplot
 from geopy import distance
+import geoplotlib
+from geoplotlib.utils import BoundingBox
+from geoplotlib.layers import BaseLayer
+from geoplotlib.core import BatchPainter
 
 
 def geodesic_dist(p1, p2):
@@ -110,7 +113,7 @@ def get_medoids(groups):
     return np.vstack(medoids)
 
 
-def get_grid(n_samples=10000, min_dist=10):
+def get_grid(n_samples=10000, min_dist=10, return_sample=False):
     """
     Get grid of points using the sample and cluster process.
 
@@ -118,6 +121,8 @@ def get_grid(n_samples=10000, min_dist=10):
         n_samples (int): Number of samples to use in the process
         min_dist (float): Distance limit for considering nodes to
         be part of same cluster.
+        return_sample (bool): If true, return all the sampled nodes
+        along the filtered ones as a second return value.
 
     Returns:
         (numpy.ndarray): Spatial points forming the grid as well as the corresponding
@@ -141,22 +146,57 @@ def get_grid(n_samples=10000, min_dist=10):
     # Join nodes in clusters and find medoids.
     clusters = get_groups(node_sample, min_dist)
     nodes_filtered = get_medoids(clusters)
-    return nodes_filtered
+    return nodes_filtered if not return_sample else (nodes_filtered, node_sample)
 
 
-def draw_grid(nodes, map_center=(40.7143528, -74.0059731, 13), save_path='grid_vis.html'):
+def draw_grid(nodes, unfiltered=None):
     """
     Draw grid using computed nodes.
 
     Args:
         nodes (numpy.ndarray): Data points to plot
-        map_center (tuple): Latitute, Longitude and zoom used for initial map view
-        save_path (str): Path for the visualization
+        unfiltered (numpy.ndarray): Unfiltered data points. If not None,
+        plot using different color.
     """
     
-    # Initialize map and plot points.
-    gmap = gmplot.GoogleMapPlotter(*map_center)
-    gmap.scatter(nodes[:, 0], nodes[:, 1], '#FF0000', size=35, marker=False)
-    gmap.draw(save_path)
+    # Layer for plotting the nodes
+    class PointsLayer(BaseLayer):
 
+        def __init__(self, data, color, point_size):
+            self.data = data
+            self.color = color
+            self.point_size = point_size
+
+        def invalidate(self, proj):
+            x, y = proj.lonlat_to_screen(self.data['lon'], self.data['lat'])
+            self.painter = BatchPainter()
+            self.painter.set_color(self.color)
+            self.painter.points(x, y, point_size=self.point_size, rounded=True)
+
+        def draw(self, proj, mouse_x, mouse_y, ui_manager):
+            self.painter.batch_draw()
+
+    # Get grid node data into dict format.
+    data_grid = {
+            'lat' : nodes[:, 0],
+            'lon' : nodes[:, 1]
+            }
+    
+    # If unfiltered nodes specified, get data into dict format.
+    if unfiltered is not None:
+        data_unfiltered = {
+                'lat' : unfiltered[:, 0],
+                'lon' : unfiltered[:, 1]
+                }
+    
+    # If unfiltered nodes specified, plot on layer.
+    if unfiltered is not None:
+        geoplotlib.add_layer(PointsLayer(data_unfiltered, color=[255, 0, 0], point_size=4))
+
+    # Plot grid nodes.
+    geoplotlib.add_layer(PointsLayer(data_grid, color=[0, 0, 255], point_size = 7))
+    
+    # Set bounding box and show.
+    geoplotlib.set_bbox(BoundingBox(north=40.897994, west=-73.199040, south=40.595581, east=-74.55040))
+    geoplotlib.show()
 
