@@ -90,6 +90,7 @@ if args.action == 'eval-tts':
     print('r2: {0:.4f}'.format(r2))
     
     # If using gradient boosting method, evaluate and display feature importance scores.
+    # TODO: implement also for logistic regression.
     if model.name == 'gboosting':
         feature_scores = model.score_features(f_to_name)
         print('Features sorted by estimated importance:')
