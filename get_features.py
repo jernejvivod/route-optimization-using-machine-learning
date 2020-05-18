@@ -31,13 +31,45 @@ encoders = {
 }
 
 # Parse list of features to extract.
-with open('./features.txt', 'r') as f:
+with open('./features.txt', 'r') as f1, open('./features_all.txt', 'w') as f2:
         features_to_extract = list(filter(lambda x: x != '' and x[0] != '#', 
-            map(lambda x: x.strip(), f.readlines())))
+            map(lambda x: x.strip(), f1.readlines())))
+        extracted_features_names_all = features_to_extract.copy()
+        
+        if 'pickup-datetime' in features_to_extract:
+            index = extracted_features_names_all.index('pickup-datetime')
+            extracted_features_names_all[index+1:index+1] = ['pickup-month', 'pickup-day', 
+                    'pickup-weekday', 'pickup-hour', 'pickup-minute', 'pickup-second']
+            extracted_features_names_all.remove('pickup-datetime')
+        if 'vendor-id' in features_to_extract:
+            to_insert = ['vendor-id-' + str(idx) for idx in range(int(np.ceil(np.log2(len(encoders['VendorID'].classes_)))))]
+            index = extracted_features_names_all.index('vendor-id')
+            extracted_features_names_all[index+1:index+1] = to_insert
+            extracted_features_names_all.remove('vendor-id')
+        if 'store-and-fwd-flag' in features_to_extract:
+            to_insert = ['store-and-fwd-flag' + str(idx) for idx in range(int(np.ceil(np.log2(len(encoders['Store_and_fwd_flag'].classes_)))))]
+            index = extracted_features_names_all.index('store-and-fwd-flag')
+            extracted_features_names_all[index+1:index+1] = to_insert
+            extracted_features_names_all.remove('store-and-fwd-flag')
+        if 'rate-code-id' in features_to_extract:
+            to_insert = ['rate-code-id-' + str(idx) for idx in range(int(np.ceil(np.log2(len(encoders['RateCodeID'].classes_)))))]
+            index = extracted_features_names_all.index('rate-code-id')
+            extracted_features_names_all[index+1:index+1] = to_insert
+            extracted_features_names_all.remove('rate-code-id')
+        if 'payment-type' in features_to_extract:
+            to_insert = ['payment-type-' + str(idx) for idx in range(int(np.ceil(np.log2(len(encoders['Payment_type'].classes_)))))]
+            index = extracted_features_names_all.index('payment-type')
+            extracted_features_names_all[index+1:index+1] = to_insert
+            extracted_features_names_all.remove('payment-type')
+        if 'trip-type' in features_to_extract:
+            to_insert = ['trip-type-' + str(idx) for idx in range(int(np.ceil(np.log2(len(encoders['Trip_type '].classes_)))))]
+            index = extracted_features_names_all.index('trip-type')
+            extracted_features_names_all[index+1:index+1] = to_insert
+            extracted_features_names_all.remove('trip-type')
+        f2.write('\n'.join(extracted_features_names_all))
 
 # Get feature extraction function that extract features from a given sample.
 feature_extractor = get_feature_extractor(features_to_extract, encoders)
-
 
 # Extract features and get data matrix.
 data = np.vstack([feature_extractor(sample[1]) for sample in df.iterrows()])

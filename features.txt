@@ -1,7 +1,7 @@
 # This file lists the features to use to build the model
 # The features can be ignored by prefixing them with #.
 
-vendor_id
+vendor-id
 pickup-datetime
 store-and-fwd-flag
 rate-code-id

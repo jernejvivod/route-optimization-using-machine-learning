@@ -176,7 +176,10 @@ if __name__ == '__main__':
     ### PARSE ARGUMENTS ###
     parser = argparse.ArgumentParser(description='Approximate solution to TSP using simulated annealing.')
     parser.add_argument('--num-nodes', type=int, default=40, help='Number of nodes to use')
-    parser.add_argument('--dist-func', type=str, default='geodesic', choices=['geodesic', 'learned'], help='Distance function to use')
+    parser.add_argument('--dist-func', type=str, default='geodesic', choices=['geodesic', 'learned'], 
+            help='Distance function to use')
+    parser.add_argument('--prediction-model', type=str, default='xgboost', choices=['gboosting', 'rf'], 
+            help='Prediction model to use for learned distance function')
     parser.add_argument('--max-it', type=int, default=3000, help='Maximum iterations to perform')
     args = parser.parse_args()
     #######################
@@ -191,7 +194,7 @@ if __name__ == '__main__':
     network.remove_nodes_from(random.sample(list(network.nodes), to_remove))
 
     # Get distance function.
-    dist_func = get_dist_func(network, which=args.dist_func)
+    dist_func = get_dist_func(network, which=args.dist_func, prediction_model=args.prediction_model)
 
     # Get solution using simulated annealing.
     solution_edgelist, current_fitness, best_fitness, initial_fitness, \

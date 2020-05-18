@@ -17,7 +17,7 @@ def get_feature_extractor(features, encoders):
     """
 
     def get_feature(sample, feature):
-        if feature == 'vendor_id':
+        if feature == 'vendor-id':
 
             # Get encoding of Vendor's ID.
             return encoders['VendorID'].transform([sample['VendorID']])[0]
