@@ -10,7 +10,6 @@ import argparse
 
 class AnimatedProcess(BaseLayer):
 
-
     def __init__(self, network, edgelists, show_addresses=False, save_frames=False):
 
         # Set network and edge lists.

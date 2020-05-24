@@ -48,7 +48,12 @@ elif args.model == 'gboosting':
     with open('./features_all.txt', 'r') as f:
         f_names = list(map(lambda x: x.strip(), f.readlines()))
         f_to_name = {'f' + str(idx) : f_names[idx] for idx in range(len(f_names))}
-
+elif args.model == 'logreg':
+    clf = LogisticRegression(max_iter=1000)
+    clf.name = 'logreg'
+    with open('./features_all.txt', 'r') as f:
+        f_names = list(map(lambda x: x.strip(), f.readlines()))
+        f_to_name = {'f' + str(idx) : f_names[idx] for idx in range(len(f_names))}
 elif args.model == 'majority':
     model.name = 'majority'
 elif args.model == 'uniform':
@@ -90,8 +95,7 @@ if args.action == 'eval-tts':
     print('r2: {0:.4f}'.format(r2))
     
     # If using gradient boosting method, evaluate and display feature importance scores.
-    # TODO: implement also for logistic regression.
-    if model.name == 'gboosting':
+    if model.name in {'gboosting', 'logreg'}:
         feature_scores = model.score_features(f_to_name)
         print('Features sorted by estimated importance:')
         for feature, score in [(feature, score) for feature, score in sorted(feature_scores.items(), key=lambda x: x[1], reverse=True)]:

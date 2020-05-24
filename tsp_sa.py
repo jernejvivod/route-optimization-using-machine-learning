@@ -78,7 +78,7 @@ def initial_solution(starting_node, network, strategy):
     return solution_edgelist, fitness
 
 
-def anneal(starting_node, network, max_it=-1, temp=-1, temp_min=-1, alpha=-1):
+def anneal(network, starting_node, max_it=-1, temp=-1, temp_min=-1, alpha=-1):
     """
     Approximate solution to TSP problem on given network using simulated annealing.
     Default values of -1 for the max_it, temp, temp_min and alpha parameters specify
@@ -198,8 +198,8 @@ if __name__ == '__main__':
 
     # Get solution using simulated annealing.
     solution_edgelist, current_fitness, best_fitness, initial_fitness, \
-            accepted_edgelists, temp_vals, fitness_vals = anneal(0, network, max_it=args.max_it)
-    
+            accepted_edgelists, temp_vals, fitness_vals = anneal(network, 0, max_it=args.max_it)
+
     # Save list of edge lists for animation.
     np.save('./results/edgelists/edgelist_tsp.gpickle', list(map(np.vstack, accepted_edgelists)))
     nx.write_gpickle(network, './results/networks/network_tsp.gpickle')
