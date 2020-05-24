@@ -1,6 +1,9 @@
 from copy import copy
 import numpy as np
 from geopy.geocoders import Nominatim
+import networkx as nx
+from models.distance import get_dist_func
+import random
 
 
 def get_parents(instances, best_num, rand_num, mutation_rate):
@@ -84,6 +87,35 @@ def fitness_scores(instances):
 
 
 def main():
+
+    # !!! RUN get_model.py !!!
+
+    # read network
+    network = nx.read_gpickle('./data/grid_data/grid_network.gpickle')
+
+    # number of nodes in the network.
+    NUM_NODES = 30
+
+    # get the correct num of nodes with sampling and removing nodes
+    to_remove = network.number_of_nodes() - NUM_NODES
+    network.remove_nodes_from(random.sample(list(network.nodes), to_remove))
+
+    # get distance functions for two nodes which = 'geodesic' or 'learned'
+    dist_func_geodesic = get_dist_func(network, which='geodesic')
+    dist_func_learned = get_dist_func(network, which='learned')
+
+    # Examples of distance calculation
+
+    """
+    n1 = list(network.nodes())[0]
+    n2 = list(network.nodes())[2]
+    dist1 = dist_func_geodesic(n1, n2)
+    dist2 = dist_func_learned(n1, n2)
+    """
+
+    # TODO: figure out how to get the nodes in a format for genetic algorithms as below - print out nodes first
+    # could just take random nodes as a generation ....
+
     test_locations = {'L1': (40.819688, -73.915091),
                       'L2': (40.815421, -73.941761),
                       'L3': (40.764198, -73.910785),
