@@ -23,12 +23,11 @@ def get_fitness(solution_edgelist):
     return sum(map(lambda el : dist_func(*el), solution_edgelist))
 
 
-def initial_solution(starting_node, network, strategy):
+def initial_solution(network, strategy):
     """
     Compute initial solution for the TSP problem using specified strategy.
 
     Args:
-        starting_node (int): Starting node for the trip.
         network (object): Networkx representation of the network.
         strategy (str): Method used to construct the initial solution.
         Valid values are 'greedy' and 'random'.
@@ -78,14 +77,13 @@ def initial_solution(starting_node, network, strategy):
     return solution_edgelist, fitness
 
 
-def anneal(network, starting_node, max_it=-1, temp=-1, temp_min=-1, alpha=-1):
+def anneal(network, max_it=-1, temp=-1, temp_min=-1, alpha=-1):
     """
     Approximate solution to TSP problem on given network using simulated annealing.
     Default values of -1 for the max_it, temp, temp_min and alpha parameters specify
     the use of pre-set values.
 
     Args:
-        starting_node (int): Starting node for the trip
         network (object): Networkx representation of the network
         max_it (int): Maximum iterations to perform.
         temp (float): Initial temperature.
@@ -108,7 +106,7 @@ def anneal(network, starting_node, max_it=-1, temp=-1, temp_min=-1, alpha=-1):
     it_count = 0
 
     # Get initial solution using greedy search.
-    solution_edgelist, initial_fitness = initial_solution(starting_node, network, strategy='random')
+    solution_edgelist, initial_fitness = initial_solution(network, strategy='random')
     solution_perm = np.array([el[0] for el in solution_edgelist])
     solution_length = len(solution_perm)
     
@@ -175,7 +173,7 @@ if __name__ == '__main__':
 
     ### PARSE ARGUMENTS ###
     parser = argparse.ArgumentParser(description='Approximate solution to TSP using simulated annealing.')
-    parser.add_argument('--num-nodes', type=int, default=40, help='Number of nodes to use')
+    parser.add_argument('--num-nodes', type=int, default=70, help='Number of nodes to use')
     parser.add_argument('--dist-func', type=str, default='geodesic', choices=['geodesic', 'learned'], 
             help='Distance function to use')
     parser.add_argument('--prediction-model', type=str, default='xgboost', choices=['gboosting', 'rf'], 
@@ -198,7 +196,7 @@ if __name__ == '__main__':
 
     # Get solution using simulated annealing.
     solution_edgelist, current_fitness, best_fitness, initial_fitness, \
-            accepted_edgelists, temp_vals, fitness_vals = anneal(network, 0, max_it=args.max_it)
+            accepted_edgelists, temp_vals, fitness_vals = anneal(network, max_it=args.max_it)
 
     # Save list of edge lists for animation.
     np.save('./results/edgelists/edgelist_tsp.gpickle', list(map(np.vstack, accepted_edgelists)))
@@ -214,4 +212,13 @@ if __name__ == '__main__':
     plt.xlabel('Iteration')
     plt.ylabel('Fitness')
     plt.savefig('./results/plots/fitness_tsp_sa.png')
+
+    # Print best solution fitness.
+    print('Fitness of best found solution: {0}'.format(best_fitness))
+    
+    # Print initial best fitness.
+    print('Fitness of initial solution: {0}'.format(initial_fitness))
+
+    # Print increase in fitness.
+    print('Fitness value improved by: {0}%'.format(initial_fitness/best_fitness))
 

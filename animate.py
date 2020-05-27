@@ -44,7 +44,7 @@ class AnimatedProcess(BaseLayer):
         
 
     def draw(self, proj, mouse_x, mouse_y, ui_manager):
-        
+
         # Prepare edges for next frame.
         self.edge_src = np.empty((2, len(self.edgelists[self.count])), dtype=float)
         self.edge_dst = np.empty((2, len(self.edgelists[self.count])), dtype=float)
@@ -92,7 +92,7 @@ if __name__ == '__main__':
 
     # Parse edgelist.
     edgelists = np.load(args.edgelist_path)
-    
+
     # Add animation layer, set bounding box and show.
     geoplotlib.add_layer(AnimatedProcess(network, edgelists, show_addresses=args.show_addresses, save_frames=args.save_frames))
     geoplotlib.set_bbox(BoundingBox(north=40.897994, west=-73.199040, south=40.595581, east=-74.55040))
