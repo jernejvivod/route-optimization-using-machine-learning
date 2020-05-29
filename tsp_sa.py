@@ -77,32 +77,27 @@ def initial_solution(network, strategy):
     return solution_edgelist, fitness
 
 
-def anneal(network, max_it=-1, temp=-1, temp_min=-1, alpha=-1):
+def anneal(network, max_it=1e4, temp=-1.0, temp_min=1.0e-8, alpha=0.995):
     """
     Approximate solution to TSP problem on given network using simulated annealing.
-    Default values of -1 for the max_it, temp, temp_min and alpha parameters specify
-    the use of pre-set values.
 
     Args:
         network (object): Networkx representation of the network
-        max_it (int): Maximum iterations to perform.
-        temp (float): Initial temperature.
+        max_it (int): Maximum iterations to perform
+        temp (float): Initial temperature
         temp_min (float): Minimum temperature. The procedure is stopped when the
-        temperature falls below this value.
-        alpha (float): The cooling rate.
+        temperature falls below this value
+        alpha (float): The cooling rate
 
     Returns:
         (tuple): The edgelist encoding the solution, the current fitness value, the best found fitness value,
         the initial fitness value, the list of accepted edgelists (for animations), the list of temperature values
-        for each iteration, the list of fitness values for each iteration.
+        for each iteration, the list of fitness values for each iteration
     """
 
     # Set starting temperature, stopping temperature, alpha, maximum iterations
     # and initialize iterations counter.
-    curr_temp = np.sqrt(network.number_of_nodes()) if temp == -1 else temp
-    stop_temp = 1e-8 if temp_min == -1 else temp_min
-    alpha_ = 0.995 if alpha == -1 else alpha
-    max_it_ = int(1e4) if max_it == -1 else max_it
+    curr_temp = np.sqrt(network.number_of_nodes()) if temp == -1.0 else temp
     it_count = 0
 
     # Get initial solution using greedy search.
@@ -123,7 +118,7 @@ def anneal(network, max_it=-1, temp=-1, temp_min=-1, alpha=-1):
     
     # Perform annealing while temperature above minimum and
     # maximum number of iterations not achieved.
-    while curr_temp > stop_temp and it_count < max_it_:
+    while curr_temp > temp_min and it_count < max_it:
         
         # Append temperature and fitness value
         temp_vals.append(curr_temp)
@@ -144,7 +139,7 @@ def anneal(network, max_it=-1, temp=-1, temp_min=-1, alpha=-1):
             current_fitness = neighbor_fitness
             solution_edgelist = neighbor_edgelist
             accepted_edgelists.append(solution_edgelist)
-            if neighbor_fitness > best_fitness:
+            if neighbor_fitness < best_fitness:
                 best_fitness = neighbor_fitness
         else:
             
@@ -161,9 +156,9 @@ def anneal(network, max_it=-1, temp=-1, temp_min=-1, alpha=-1):
         
         # Increment iteration counter and decrease temperature.
         it_count += 1
-        curr_temp *= alpha_
+        curr_temp *= alpha
         print("current fitness: {0}".format(current_fitness))
-        print("current iteration: {0}/{1}".format(it_count, max_it_))
+        print("current iteration: {0}/{1}".format(it_count, max_it))
 
 
     return solution_edgelist, current_fitness, best_fitness, initial_fitness, accepted_edgelists, temp_vals, fitness_vals
@@ -171,16 +166,21 @@ def anneal(network, max_it=-1, temp=-1, temp_min=-1, alpha=-1):
 
 if __name__ == '__main__':
 
+
     ### PARSE ARGUMENTS ###
     parser = argparse.ArgumentParser(description='Approximate solution to TSP using simulated annealing.')
-    parser.add_argument('--num-nodes', type=int, default=70, help='Number of nodes to use')
+    parser.add_argument('--num-nodes', type=int, default=30, help='Number of nodes to use')
     parser.add_argument('--dist-func', type=str, default='geodesic', choices=['geodesic', 'learned'], 
             help='Distance function to use')
     parser.add_argument('--prediction-model', type=str, default='xgboost', choices=['gboosting', 'rf'], 
             help='Prediction model to use for learned distance function')
-    parser.add_argument('--max-it', type=int, default=3000, help='Maximum iterations to perform')
+    parser.add_argument('--max-it', type=int, default=1e4, help='Maximum iterations to perform')
+    parser.add_argument('--temp', type=float, default=-1.0, help='Initial temperature')
+    parser.add_argument('--temp-min', type=float, default=1.0e-8, help='Minimal temperature')
+    parser.add_argument('--alpha', type=float, default=0.995, help='Cooling rate')
     args = parser.parse_args()
     #######################
+
     
     # Parse problem network.
     network = nx.read_gpickle('./data/grid_data/grid_network.gpickle')
@@ -193,14 +193,15 @@ if __name__ == '__main__':
 
     # Get distance function.
     dist_func = get_dist_func(network, which=args.dist_func, prediction_model=args.prediction_model)
-
+    
     # Get solution using simulated annealing.
     solution_edgelist, current_fitness, best_fitness, initial_fitness, \
-            accepted_edgelists, temp_vals, fitness_vals = anneal(network, max_it=args.max_it)
+            accepted_edgelists, temp_vals, fitness_vals = anneal(network, max_it=args.max_it, 
+                    temp=args.temp, temp_min=args.temp_min, alpha=args.alpha)
 
     # Save list of edge lists for animation.
-    np.save('./results/edgelists/edgelist_tsp.gpickle', list(map(np.vstack, accepted_edgelists)))
-    nx.write_gpickle(network, './results/networks/network_tsp.gpickle')
+    np.save('./results/edgelists/edgelist_tsp_sa.npy', list(map(np.vstack, accepted_edgelists)))
+    nx.write_gpickle(network, './results/networks/network_tsp_sa.gpickle')
     
     # Plot temperature and fitness with respect to iteration.
     plt.plot(temp_vals)
@@ -214,11 +215,11 @@ if __name__ == '__main__':
     plt.savefig('./results/plots/fitness_tsp_sa.png')
 
     # Print best solution fitness.
-    print('Fitness of best found solution: {0}'.format(best_fitness))
+    print('Fitness of best found solution: {0:.3f}'.format(best_fitness))
     
     # Print initial best fitness.
-    print('Fitness of initial solution: {0}'.format(initial_fitness))
+    print('Fitness of initial solution: {0:.3f}'.format(initial_fitness))
 
     # Print increase in fitness.
-    print('Fitness value improved by: {0}%'.format(initial_fitness/best_fitness))
+    print('Fitness value improved by: {0:.3f}%'.format(100*initial_fitness/best_fitness))
 
