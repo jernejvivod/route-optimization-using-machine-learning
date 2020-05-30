@@ -172,7 +172,7 @@ if __name__ == '__main__':
     parser.add_argument('--num-nodes', type=int, default=30, help='Number of nodes to use')
     parser.add_argument('--dist-func', type=str, default='geodesic', choices=['geodesic', 'learned'], 
             help='Distance function to use')
-    parser.add_argument('--prediction-model', type=str, default='xgboost', choices=['gboosting', 'rf'], 
+    parser.add_argument('--prediction-model', type=str, default='gboosting', choices=['gboosting', 'rf'], 
             help='Prediction model to use for learned distance function')
     parser.add_argument('--max-it', type=int, default=1e4, help='Maximum iterations to perform')
     parser.add_argument('--temp', type=float, default=-1.0, help='Initial temperature')

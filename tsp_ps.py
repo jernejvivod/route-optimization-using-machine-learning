@@ -19,9 +19,11 @@ def crossover(particle_1, particle_2, p_mut, node_list):
         (tuple): Two offspring obtained by crossover (particle dicts).
     """
     
-    # 
+    # Convert permutation matrices to permutation arrays.
     perm1 = np.array([el[0] for el in zip(*np.where(particle_1['position']))])
     perm2 = np.array([el[0] for el in zip(*np.where(particle_2['position']))])
+
+    # Split permutation arrays at two random points.
     c1 = perm1[:np.random.randint(1, len(perm1))]
     c2 = perm2[:np.random.randint(1, len(perm2))]
 
@@ -39,11 +41,13 @@ def crossover(particle_1, particle_2, p_mut, node_list):
         p2 = np.random.randint(0, len(offspring2))
         offspring2[[p1, p2]] = offspring2[[p2, p1]]
     
+    # Convert offsprings to permutation matrices and compute fitness values.
     offspring1_mat = perm_to_mat(offspring1)
     offspring2_mat = perm_to_mat(offspring2)
     fitness_off1 = get_fitness(offspring1_mat, node_list)
     fitness_off2 = get_fitness(offspring2_mat, node_list)
-    
+   
+    # Build resulting offspring particles.
     particle_off1 = {
             'position' : offspring1_mat,
             'fitness_position' : fitness_off1,
@@ -59,7 +63,8 @@ def crossover(particle_1, particle_2, p_mut, node_list):
             'fitness_p_best' : fitness_off2 if fitness_off2 < particle_2['fitness_p_best'] else particle_2['fitness_p_best'],
             'velocity' : particle_2['velocity']
             }
-
+    
+    # Return offspring particles.
     return particle_off1, particle_off2
 
 
@@ -432,7 +437,7 @@ if __name__ == '__main__':
     parser.add_argument('--num-nodes', type=int, default=30, help='Number of nodes to use')
     parser.add_argument('--dist-func', type=str, default='geodesic', choices=['geodesic', 'learned'], 
             help='Distance function to use')
-    parser.add_argument('--prediction-model', type=str, default='xgboost', choices=['gboosting', 'rf'], 
+    parser.add_argument('--prediction-model', type=str, default='gboosting', choices=['gboosting', 'rf'], 
             help='Prediction model to use for learned distance function')
     parser.add_argument('--max-it', type=int, default=200, help='Maximum iterations to perform')
     parser.add_argument('--n-particles', type=int, default=100, help='Number of particles to use')

@@ -90,7 +90,7 @@ def aco(network, n_ants=100, max_it=500, rho=0.1, alpha=1.0, beta=1.0, q=1.0,
     
     # Initilize best found solution.
     best_solution = {
-            'fitness' : 1.0e9,
+            'fitness' : np.inf,
             'solution' : None
             }
 
