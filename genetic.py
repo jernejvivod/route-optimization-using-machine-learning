@@ -6,9 +6,9 @@ import random
 
 
 def get_parents(instances, best_num, rand_num, mutation_rate, network):
-    scores = fitness_scores(instances,network)
-    scores_sorted = sorted(scores, key=lambda x: x[i])
-    new_gen =[i[0] for i in scores_sorted[:best_num]]
+    scores = fitness_scores(instances, network)
+    scores_sorted = sorted(scores, key=lambda x: x[1])
+    new_gen = [i[0] for i in scores_sorted[:best_num]]
     best = new_gen[0]
     for i in range(rand_num):
         x = np.random.randint(len(instances))
@@ -17,10 +17,10 @@ def get_parents(instances, best_num, rand_num, mutation_rate, network):
     return new_gen, best
 
 
-def get_children(p1,p2):
-    p_size =len(p1)//2
+def get_children(p1, p2):
+    p_size = len(p1) // 2
     parent_list1 = list(np.random.choice(p1, replace=False, size=p_size))
-    child = [-999]*len(p1)
+    child = [-999] * len(p1)
     for i in range(0, len(parent_list1)):
         child[i] = p1[i]
     for i, v in enumerate(child):
@@ -34,11 +34,11 @@ def get_children(p1,p2):
 
 
 def crossover(current_gen, children_n):
-    mid_point = len(current_gen)//2
+    mid_point = len(current_gen) // 2
     next_gen = []
     for i, parent in enumerate(current_gen[:mid_point]):
         for x in range(children_n):
-            next_gen.append(get_children(parent,current_gen[-i-1]))
+            next_gen.append(get_children(parent, current_gen[-i - 1]))
     return next_gen
 
 
@@ -49,7 +49,7 @@ def evolution(current_gen, max_gen_n, best_num, rand_num, mutation_rate, childre
         print("Generation" + str(i) + ": len=" + str(len(current_gen)))
         if i < 0:
             print("best sore: " + str(fitness[-1]))
-        parents, best = get_parents(current_gen,best_num, rand_num, mutation_rate, network)
+        parents, best = get_parents(current_gen, best_num, rand_num, mutation_rate, network)
         fitness.append(calculate_fitness(best, network=network))
         current_gen = crossover(parents, children_n)
     return fitness, best
@@ -81,8 +81,8 @@ def make_generation(nodes, population_size):
 
 def calculate_fitness(instance, network):
     s = 0
-    for c in range(instance - 1):
-        s += dist_func(c, c + 1,'geodesic', network)
+    for c in range(len(instance) - 1):
+        s += dist_func(instance[c], instance[c + 1], 'geodesic', network)
     return s
 
 
@@ -95,7 +95,6 @@ def fitness_scores(instances, network):
 
 
 def main():
-
     # !!! RUN get_model.py !!!
 
     # read network
@@ -110,7 +109,7 @@ def main():
 
     test_population = make_generation(list(nx.nodes(network)), 10)
 
-    fitness, best = evolution(test_population,100,150,70,0.5,3, network)
+    fitness, best = evolution(test_population, 100, 150, 70, 0.5, 3, network)
     print("final fitness :")
     print(fitness)
     print("best instamce: ")
