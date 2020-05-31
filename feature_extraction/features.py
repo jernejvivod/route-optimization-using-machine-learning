@@ -104,7 +104,6 @@ def get_feature_extractor(features, encoders):
             # Get tip amount feature.
             return np.array([sample['Tip_amount']])
 
-
         elif feature == 'tolls-amount':
             
             # Get tolls amount feature.
@@ -134,6 +133,36 @@ def get_feature_extractor(features, encoders):
 
             # Get trip type feature.
             return np.array([sample['Trip_type ']])
+       
+        elif feature == 'maximum-temperature':
+
+            # Get maximum temperature feature.
+            return np.array([sample['maximum temperature']])
+
+        elif feature == 'minimum-temperature':
+
+            # Get minimum temperature feature.
+            return np.array([sample['minimum temperature']])
+
+        elif feature == 'average-temperature':
+
+            # Get average temperature feature.
+            return np.array([sample['average temperature']])
+
+        elif feature == 'precipitation':
+
+            # Get precipitation feature.
+            return np.array([sample['precipitation']])
+
+        elif feature == 'snow-fall':
+
+            # Get snow fall feature.
+            return np.array([sample['snow fall']])
+
+        elif feature == 'snow-depth':
+
+            # Get snow depth feature.
+            return np.array([sample['snow depth']])
 
 
     def feature_extractor(features, sample):

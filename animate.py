@@ -10,18 +10,21 @@ import argparse
 
 class AnimatedProcess(BaseLayer):
 
-    def __init__(self, network, edgelists, show_addresses=False, save_frames=False):
+    def __init__(self, network, edgelists, show_addresses=False, save_frames=False, line_width=1.3):
 
         # Set network and edge lists.
         self.network = network
         self.edgelists = edgelists
         self.num_frames = len(self.edgelists)
+        
+        # Set flag specifying whether to show addresses.
+        self.show_addresses = show_addresses
 
         # Set flag specifying whether to save frames.
         self.save_frames = save_frames
 
-        # Set flag specifying whether to show addresses.
-        self.show_addresses = show_addresses
+        # Set line width.
+        self.line_width = line_width
         
         # Initialize state counter.
         self.count = 0
@@ -62,7 +65,7 @@ class AnimatedProcess(BaseLayer):
 
         # Plot edges.
         self.painter.set_color([255, 0, 0])
-        self.painter.lines(self.edge_src_trans_x, self.edge_src_trans_y, self.edge_dst_trans_x, self.edge_dst_trans_y, width=1)
+        self.painter.lines(self.edge_src_trans_x, self.edge_src_trans_y, self.edge_dst_trans_x, self.edge_dst_trans_y, width=self.line_width)
         
         # Draw and increment counter.
         self.painter.batch_draw()
@@ -84,17 +87,19 @@ if __name__ == '__main__':
     parser.add_argument('--edgelist-path', type=str, required=True, help='Path to the edge list')
     parser.add_argument('--show-addresses', action='store_true', help='Show addresses corresponding to the nodes')
     parser.add_argument('--save-frames', action='store_true', help='Save animation frames')
+    parser.add_argument('--line-width', type=float, default=1.3, help='Width of the lines representing the edges')
     args = parser.parse_args()
     #######################
-    
+
     # Parse network.
     network = nx.read_gpickle(args.network_path)
 
     # Parse edgelist.
-    edgelists = np.load(args.edgelist_path)
+    edgelists = np.load(args.edgelist_path, allow_pickle=True)
 
     # Add animation layer, set bounding box and show.
-    geoplotlib.add_layer(AnimatedProcess(network, edgelists, show_addresses=args.show_addresses, save_frames=args.save_frames))
+    geoplotlib.add_layer(AnimatedProcess(network, edgelists, show_addresses=args.show_addresses, 
+        save_frames=args.save_frames, line_width=args.line_width))
     geoplotlib.set_bbox(BoundingBox(north=40.897994, west=-73.199040, south=40.595581, east=-74.55040))
     geoplotlib.show()
 

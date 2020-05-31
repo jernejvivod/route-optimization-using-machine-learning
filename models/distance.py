@@ -62,6 +62,13 @@ def get_dist_func(network, which='learned', prediction_model='rf'):
                 'Total_amount' : 11.16,
                 'Payment_type' : 2.0,
                 'Trip_type ' : 1.0,
+                'maximum temperature' : 41,
+                'minimum temperature' : 25,
+                'minimum temperature' : 25,
+                'average temperature' : 33.0,
+                'precipitation' : 0.01,
+                'snow fall' : 0.01,
+                'snow depth' : 1.0,
             }
 
         

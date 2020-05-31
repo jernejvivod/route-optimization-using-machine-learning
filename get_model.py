@@ -27,7 +27,6 @@ target = np.load('./data/features_target.npy')
 # Initialize pipeline template.
 clf_pipeline = Pipeline([('scaling', RobustScaler())])
 
-
 # root mean square logarithmic error
 def rmsle(y_true, y_pred):
     return np.square(np.log(y_pred + 1) - np.log(y_true + 1)).mean() ** 0.5

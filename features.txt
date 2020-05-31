@@ -24,3 +24,9 @@ improvement-surcharge
 total-amount
 payment-type
 trip-type
+maximum-temperature
+minimum-temperature
+average-temperature
+precipitation
+snow-fall
+snow-depth

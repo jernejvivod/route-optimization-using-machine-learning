@@ -6,6 +6,7 @@ import random
 
 
 def get_parents(instances, best_num, rand_num, mutation_rate, network):
+
     scores = fitness_scores(instances, network)
     scores_sorted = sorted(scores, key=lambda x: x[1])
     new_gen = [i[0] for i in scores_sorted[:best_num]]
@@ -44,15 +45,17 @@ def crossover(current_gen, children_n):
 
 def evolution(current_gen, max_gen_n, best_num, rand_num, mutation_rate, children_n, network):
     fitness = []
+    edgelists = []
     best = -1
     for i in range(max_gen_n):
         print("Generation" + str(i) + ": len=" + str(len(current_gen)))
         if i < 0:
             print("best sore: " + str(fitness[-1]))
         parents, best = get_parents(current_gen, best_num, rand_num, mutation_rate, network)
+        edgelists.append([(best[idx], best[idx+1]) for idx in range(len(best)-1)])
         fitness.append(calculate_fitness(best, network=network))
         current_gen = crossover(parents, children_n)
-    return fitness, best
+    return fitness, best, edgelists
 
 
 def dist_func(n1, n2, function, network):
@@ -109,11 +112,16 @@ def main():
 
     test_population = make_generation(list(nx.nodes(network)), 10)
 
-    fitness, best = evolution(test_population, 100, 150, 70, 0.5, 3, network)
+    fitness, best, edgelists = evolution(test_population, 500, 350, 70, 0.08, 3, network)
     print("final fitness :")
     print(fitness)
     print("best instamce: ")
     print(best)
+
+    # Save list of edge lists for animation.
+    np.save('./results/edgelists/edgelist_tsp_genetic.npy', list(map(np.vstack, edgelists)))
+    nx.write_gpickle(network, './results/networks/network_tsp_genetic.gpickle')
+
 
 
 if __name__ == '__main__':
