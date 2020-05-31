@@ -144,9 +144,9 @@ def genetic(network, max_it=300, population_size=30, method='ranked', breeding_c
     # Main iteration loop
     for it_idx in range(max_it):
 
-
-        print(it_idx)
-        print(global_best['fitness'])
+        # Print iteration index and best fitness.
+        print('iteration: {0}'.format(it_idx))
+        print('best fitness: {0}'.format(global_best['fitness']))
 
         # Evaluate and sort population
         evaluated = sorted([(inst, get_fitness(inst, node_list)) 
