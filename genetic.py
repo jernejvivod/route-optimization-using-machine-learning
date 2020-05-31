@@ -94,7 +94,7 @@ def fitness_scores(instances, network):
     for i in instances:
         s = calculate_fitness(i, network)
         scores.append((i, s))
-        return scores
+    return scores
 
 
 def main():
@@ -115,7 +115,7 @@ def main():
     fitness, best, edgelists = evolution(test_population, 500, 350, 70, 0.08, 3, network)
     print("final fitness :")
     print(fitness)
-    print("best instamce: ")
+    print("best instance: ")
     print(best)
 
     # Save list of edge lists for animation.

@@ -6,7 +6,7 @@ import geopy.distance as geodesic_dist
 from collections import OrderedDict
 
 
-def get_dist_func(network, which='learned', prediction_model='rf'):
+def get_dist_func(network, which='learned', prediction_model='gboosting'):
     """
     Get distance function for measuring distances between nodes
     in network. The distance function accepts indices of two
